@@ -1,0 +1,15 @@
+---
+import Layout from "../layouts/Layout.astro"
+import Worldle from "../components/Worldle/Worldle.svelte";
+
+const req = await fetch("https://restcountries.com/v3.1/all")
+const countries = await req.json()
+---
+
+<Layout title="Worldle">
+  <main class="max-w-screen-lg mx-auto">
+    <h1 class="text-5xl text-center text-teal-600">Worldle</h1>
+    <img src="/countries/ad/vector.svg" alt="" class="max-w-sm mx-auto">
+    <Worldle client:load countries={countries} />
+  </main>
+</Layout>
