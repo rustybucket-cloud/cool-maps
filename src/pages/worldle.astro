@@ -1,15 +1,35 @@
 ---
 import Layout from "../layouts/Layout.astro"
 import Worldle from "../components/Worldle/Worldle.svelte";
+import { createClient } from '@supabase/supabase-js'
+
 
 const req = await fetch("https://restcountries.com/v3.1/all")
 const countries = await req.json()
+
+const supabaseUrl = 'https://qlwvctuttygmywyljfaj.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey || '')
+
+let data
+let error
+let country
+try {
+  const res = await supabase.from('dailyworldles').select('*').order('id', { ascending: false }).limit(1).single()
+  data = res.data
+  error = res.error
+
+  const country_req = await fetch(`https://restcountries.com/v3.1/alpha/${data.country}`)
+  country = await country_req.json()
+} catch(e) {
+  console.log(e)
+}
 ---
 
 <Layout title="Worldle">
   <main class="max-w-screen-lg mx-auto">
-    <h1 class="text-5xl text-center text-teal-600">Worldle</h1>
-    <img src="/countries/ad/vector.svg" alt="" class="max-w-sm mx-auto">
-    <Worldle client:load countries={countries} />
+    <h1 class="text-5xl text-center text-teal-600 mb-5">Worldle</h1>
+    <img src={`/countries/${country[0].cca2.toLowerCase()}/vector.svg`} alt="" class="max-w-sm mx-auto mb-5">
+    <Worldle client:load countries={countries} country={country}/>
   </main>
 </Layout>

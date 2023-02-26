@@ -16,14 +16,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	url:= r.URL
 	queries := url.Query()
 	guess := queries["guess"][0]
+	country := queries["country"][0]
 
-	guess_country := <-Get_Country(guess)
-	daily_country := <-Get_Country("Japan")
-
-	// d, e := http.Get("https://qlwvctuttygmywyljfaj.supabase.co")
-	// if e != nil {
-	// 	fmt.Println(e)
-	// }
+	guess_country := <-Get_Country(guess, "name")
+	daily_country := <-Get_Country(country, "alpha")
 
 	distance, angle := Get_Distance(guess_country[0], guess_country[1], daily_country[0], daily_country[1])
 
@@ -35,19 +31,18 @@ func Handler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, string(res))
 }
 
-func Get_Country(country string) <-chan []float64 {
+func Get_Country(country string, endpoint string) <-chan []float64 {
 	arr := make(chan []float64)
 
 	go func() {
 		defer close(arr)
-		res, err := http.Get("https://restcountries.com/v3.1/name/" + country)
+		res, err := http.Get("https://restcountries.com/v3.1/" + endpoint + "/" + country)
 
 		if err != nil {
 			fmt.Println("Err")
 		}
 
 		body, err := ioutil.ReadAll(res.Body)
-
 		var country_data []Country
 		json.Unmarshal(body, &country_data)
 		arr <- country_data[0].Latlng

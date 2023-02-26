@@ -1,6 +1,7 @@
 <script>
   export let countries
-  // export let country
+  export let country
+
   const names = countries?.map((country) => country.name?.common)?.sort() || []
   let guess = 0
   const guesses = Array(5)
@@ -13,7 +14,7 @@
   function judgeGuess() {
     const guessVal = guesses[guess]
     if (!guessVal) return
-    const url = `/api/worldle?guess=${guessVal}`
+    const url = `/api/worldle?guess=${guessVal}&country=${country[0].ccn3}`
     loading = true
     fetch(url)
       .then((req) => req.json())
