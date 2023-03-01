@@ -1,35 +1,33 @@
 ---
 import Layout from "../layouts/Layout.astro"
 import Worldle from "../components/Worldle/Worldle.svelte";
-import { createClient } from '@supabase/supabase-js'
 
-
-const req = await fetch("https://restcountries.com/v3.1/all")
-const countries = await req.json()
-
-const supabaseUrl = 'https://qlwvctuttygmywyljfaj.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey || '')
-
-let data
-let error
 let country
+let countries
 try {
-  const res = await supabase.from('dailyworldles').select('*').order('id', { ascending: false }).limit(1).single()
-  data = res.data
-  error = res.error
+  const countriesReq = await fetch("https://restcountries.com/v3.1/all")
+  countries = await countriesReq.json()  
 
-  const country_req = await fetch(`https://restcountries.com/v3.1/alpha/${data.country}`)
-  country = await country_req.json()
-} catch(e) {
-  console.log(e)
+  const req = await fetch("https://parseapi.back4app.com/functions/getDaily", {
+    method: "POST",
+    headers: {
+      'X-Parse-Application-Id': process.env.PARSE_APP_ID || '',
+      'X-Parse-REST-API-Key': process.env.PARSE_API_KEY || '',
+      'Content-Type': 'application/json'
+    }
+  })
+  const data = await req.json()
+  country = data.result.country
+} catch (err) {
+  console.error(err)
 }
+
 ---
 
 <Layout title="Worldle">
   <main class="max-w-screen-lg mx-auto">
     <h1 class="text-5xl text-center text-teal-600 mb-5">Worldle</h1>
-    <img src={`/countries/${country[0].cca2.toLowerCase()}/vector.svg`} alt="" class="max-w-sm mx-auto mb-5">
+    <img src={`/countries/${country}/vector.svg`} alt="" class="max-w-sm mx-auto mb-5">
     <Worldle client:load countries={countries} country={country}/>
   </main>
 </Layout>

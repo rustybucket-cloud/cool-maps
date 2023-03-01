@@ -14,7 +14,7 @@
   function judgeGuess() {
     const guessVal = guesses[guess]
     if (!guessVal) return
-    const url = `/api/worldle?guess=${guessVal}&country=${country[0].ccn3}`
+    const url = `/api/worldle?guess=${guessVal}&country=${country}`
     loading = true
     fetch(url)
       .then((req) => req.json())
@@ -52,6 +52,19 @@
     Guess
   </button>
 </form>
-{#if loading} 
-  <div class="w-screen h-screen bg-black opacity-30 absolute inset-0" />    
+{#if loading}
+  <div class="w-screen h-screen absolute inset-0 flex justify-center items-center">
+  <div class="w-screen h-screen bg-black opacity-30 absolute inset-0" />
+    <img src="/icons/spinner.svg" alt="a spinning icon" class="h-20 w-20 z-10 loadingSpinner">
+  </div>
 {/if}
+
+<style>
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    from { transform: rotate(359deg); }
+  }
+  .loadingSpinner {
+    animation: spin 1s linear infinite;
+  }
+</style>
