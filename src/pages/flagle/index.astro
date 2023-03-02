@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro"
-import Worldle from "../../components/Worldle/Worldle.svelte";
+import Flagle from "../../components/Flagle/Flagle.svelte";
 interface Country {
   name: {
     common: string
@@ -9,12 +9,13 @@ interface Country {
 
 let country
 let countries
+let flag
 try {
   const countriesReq = await fetch("https://restcountries.com/v3.1/all")
   countries = await countriesReq.json()
   countries = countries.map((data: Country) => data.name?.common)?.sort() || []
 
-  const req = await fetch("https://parseapi.back4app.com/functions/getDailyWorldle", {
+  const req = await fetch("https://parseapi.back4app.com/functions/getDailyFlagle", {
     method: "POST",
     headers: {
       'X-Parse-Application-Id': process.env.PARSE_APP_ID || '',
@@ -24,16 +25,20 @@ try {
   })
   const data = await req.json()
   country = data.result.country
+
+  const flagReq = await fetch(`https://restcountries.com/v3.1/alpha/${country}`)
+  const rawFlagData = await flagReq.json()
+  flag = rawFlagData?.[0]?.flags?.svg
 } catch (err) {
   console.error(err)
 }
 
 ---
 
-<Layout title="Worldle">
+<Layout title="Daily Flagle">
   <main class="max-w-screen-lg mx-auto">
-    <h1 class="text-5xl text-center text-teal-600 mb-5">Daily Worldle</h1>
-    <img src={`/countries/${country}/vector.svg`} alt="" class="max-w-sm mx-auto mb-5">
-    <Worldle client:load countries={countries} country={country} />
+    <h1 class="text-5xl text-center text-teal-600 mb-5">Daily Flagle</h1>
+    <img src={flag} alt="" class="max-w-sm mx-auto mb-5">
+    <Flagle client:load countries={countries} country={country} />
   </main>
 </Layout>
