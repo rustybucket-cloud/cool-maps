@@ -1,0 +1,39 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import Worldle from "../../components/Worldle/Worldle.svelte";
+interface Country {
+  name: {
+    common: string
+  }
+}
+
+let country
+let countries
+try {
+  const countriesReq = await fetch("https://restcountries.com/v3.1/all")
+  countries = await countriesReq.json()
+  countries = countries.map((data: Country) => data.name?.common)?.sort() || []
+
+  const req = await fetch("https://parseapi.back4app.com/functions/getDaily", {
+    method: "POST",
+    headers: {
+      'X-Parse-Application-Id': process.env.PARSE_APP_ID || '',
+      'X-Parse-REST-API-Key': process.env.PARSE_API_KEY || '',
+      'Content-Type': 'application/json'
+    }
+  })
+  const data = await req.json()
+  country = data.result.country
+} catch (err) {
+  console.error(err)
+}
+
+---
+
+<Layout title="Worldle">
+  <main class="max-w-screen-lg mx-auto">
+    <h1 class="text-5xl text-center text-teal-600 mb-5">Daily Worldle</h1>
+    <img src={`/countries/${country}/vector.svg`} alt="" class="max-w-sm mx-auto mb-5">
+    <Worldle client:load countries={countries} country={country} />
+  </main>
+</Layout>

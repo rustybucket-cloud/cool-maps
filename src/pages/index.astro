@@ -6,7 +6,10 @@ import Card from '../components/Card.astro';
 <Layout title="Welcome to Astro.">
 	<main>
 		<h1>Welcome to <span class="text-gradient">Cool Maps!</span></h1>
-		<Card title="Worldle" body="The daily country guessing game" href="/worldle" />
+		<div class="flex flex-col gap-5">
+			<Card title="Daily Worldle" body="The daily country guessing game" href="/worldle" />
+			<Card title="Random Worldle" body="Worldle with a random country" href="/worldle/random" />
+		</div>
 	</main>
 </Layout>
 

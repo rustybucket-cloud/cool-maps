@@ -6,9 +6,9 @@
   import Select from "../GameForm/Select.svelte"
 
   let guess = 0
-  const guesses = Array(5)
+  let guesses = Array(5)
 
-  const distances = Array(5)
+  let distances = Array(5)
   const angles = []
 
   let loading = false
@@ -47,6 +47,14 @@
     if (distance === 0) return 'First guess! Great job!'
     return `Total Distance: ${distance} km`
   }
+
+  function resetGame() {
+    guess = 0
+    isCorrect = false
+    gameOver = false
+    guesses = guesses.fill("")
+    distances = distances.fill(null)
+  }
 </script>
 
 <GameForm buttonText="Guess" handleSubmit={judgeGuess}>
@@ -83,7 +91,7 @@
       <div class="bg-white w-full min-h-20 mx-5 py-5 flex gap-3 flex-col justify-center items-center z-10 max-w-4xl rounded-md">
         <h2 class="text-2xl">Sorry! You're out of guesses.</h2>
         <div class="flex gap-2">
-          <button class="bg-teal-600 p-2 text-white hover:bg-teal-200 hover:text-black">Try Again</button>
+          <button class="bg-teal-600 p-2 text-white hover:bg-teal-200 hover:text-black" on:click={resetGame}>Try Again</button>
           <button class="bg-teal-600 p-2 text-white hover:bg-teal-200 hover:text-black">Reveal The Answer</button>
         </div>
       </div>
