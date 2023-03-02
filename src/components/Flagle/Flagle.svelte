@@ -99,7 +99,7 @@
   {/each}
 </GameForm>
 {#if loading || isCorrect || gameOver}
-  <div class="w-screen h-screen absolute inset-0 flex justify-center items-center">
+  <div class="w-screen h-screen absolute inset-0 flex justify-center items-center wrapper z-50"  on:click={handlePageClick} on:keydown={handlePageClick}>
     <div class="w-screen h-screen bg-white opacity-40 absolute inset-0" />
     {#if loading}
       <img src="/icons/spinner.svg" alt="a spinning icon" class="h-20 w-20 z-10 loadingSpinner">
@@ -131,5 +131,8 @@
   }
   .loadingSpinner {
     animation: spin 1s linear infinite;
+  }
+  .wrapper {
+    pointer-events: none;
   }
 </style>

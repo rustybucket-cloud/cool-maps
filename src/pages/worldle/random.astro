@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro"
-import Worldle from "../../components/Worldle/Worldle.svelte";
+import Worldle from "../../components/Worldle/Worldle.svelte"
+import BackLink from "../../components/BackLink.astro"
 
 interface Country {
   name: {
@@ -33,6 +34,7 @@ try {
 
 <Layout title="Worldle">
   <main class="max-w-screen-lg mx-auto">
+    <BackLink />
     <h1 class="text-5xl text-center text-teal-600 mb-5">Random Worldle</h1>
     <img src={`/countries/${country}/vector.svg`} alt="" class="max-w-sm mx-auto mb-5">
     <Worldle client:load countries={countries} country={country} />

@@ -1,6 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro"
-import Flagle from "../../components/Flagle/Flagle.svelte";
+import Flagle from "../../components/Flagle/Flagle.svelte"
+import BackLink from "../../components/BackLink.astro"
+
 interface Country {
   name: {
     common: string
@@ -37,6 +39,7 @@ try {
 
 <Layout title="Daily Flagle">
   <main class="max-w-screen-lg mx-auto">
+    <BackLink />
     <h1 class="text-5xl text-center text-teal-600 mb-5">Daily Flagle</h1>
     <img src={flag} alt="" class="max-w-sm mx-auto mb-5">
     <Flagle client:load countries={countries} country={country} />

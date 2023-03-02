@@ -69,6 +69,16 @@
       console.log(err)
     }
   }
+
+  let canDismiss = isCorrect || Boolean(answer)
+  function handlePageClick() {
+    if (canDismiss) {
+      gameOver = false
+      answer = null
+      isCorrect = false
+      loading = false
+    }
+  }
 </script>
 
 {#if error}
@@ -97,7 +107,7 @@
   {/each}
 </GameForm>
 {#if loading || isCorrect || gameOver}
-  <div class="w-screen h-screen absolute inset-0 flex justify-center items-center">
+  <div class="w-screen h-screen absolute inset-0 flex justify-center items-center screen">
     <div class="w-screen h-screen bg-white opacity-40 absolute inset-0" />
     {#if loading}
       <img src="/icons/spinner.svg" alt="a spinning icon" class="h-20 w-20 z-10 loadingSpinner">
@@ -107,7 +117,7 @@
         <p>{getDistanceText()}</p>
       </div>
     {:else if gameOver}
-      <div class="bg-black text-white w-full min-h-20 mx-5 py-5 flex gap-3 flex-col justify-center items-center z-10 max-w-4xl rounded-md">
+      <div class="bg-black text-white w-full min-h-20 mx-5 py-5 flex gap-3 flex-col justify-center items-center z-10 max-w-4xl rounded-md" on:click={handlePageClick} on:keydown={handlePageClick}>
         <h2 class="text-2xl">Sorry! You're out of guesses.</h2>
         <div class="flex gap-2">
           {#if answer}
