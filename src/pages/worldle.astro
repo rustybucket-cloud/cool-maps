@@ -2,11 +2,18 @@
 import Layout from "../layouts/Layout.astro"
 import Worldle from "../components/Worldle/Worldle.svelte";
 
+interface Country {
+  name: {
+    common: string
+  }
+}
+
 let country
 let countries
 try {
   const countriesReq = await fetch("https://restcountries.com/v3.1/all")
-  countries = await countriesReq.json()  
+  countries = await countriesReq.json()
+  countries = countries.map((data: Country) => data.name?.common)?.sort() || []
 
   const req = await fetch("https://parseapi.back4app.com/functions/getDaily", {
     method: "POST",

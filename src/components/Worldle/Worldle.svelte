@@ -2,7 +2,9 @@
   export let countries
   export let country
 
-  const names = countries?.map((country) => country.name?.common)?.sort() || []
+  import GameForm from "../GameForm/GameForm.svelte"
+  import Select from "../GameForm/Select.svelte"
+
   let guess = 0
   const guesses = Array(5)
 
@@ -10,36 +12,54 @@
   const angles = []
 
   let loading = false
-  
-  function judgeGuess() {
+  let isCorrect = false
+  let gameOver = false
+
+  function judgeGuess(e) {
+    e.preventDefault()
     const guessVal = guesses[guess]
     if (!guessVal) return
+  
     const url = `/api/worldle?guess=${guessVal}&country=${country}`
     loading = true
     fetch(url)
       .then((req) => req.json())
       .then((data) => {
-        distances[guess] = data.distance
+        const distance = data.distance
+        distances[guess] = distance
         angles.push(data.angle)
         guess++
         loading = false
+
+        if (distance === 0) {
+          isCorrect = true
+          return
+        }
+
+        if (guess === guesses.length) {
+          gameOver = true
+        }
       })
+  }
+
+  function getDistanceText() {
+    const distance = distances.reduce((prev, curr) => prev + curr, 0)
+    if (distance === 0) return 'First guess! Great job!'
+    return `Total Distance: ${distance} km`
   }
 </script>
 
-<form class="grid gap-2 w-full px-5">
+<GameForm buttonText="Guess" handleSubmit={judgeGuess}>
   {#each distances as distance,index}
     <div class="flex gap-4">
-      <label class="w-full">
-        <select bind:value={guesses[index]} disabled={guess !== index} class="w-full p-2">
-          <option value="" disabled selected hidden>Select One</option>
-          {#each names as country}
-            {#if guesses.indexOf(country) === -1 || guesses.indexOf(country) === index}
-              <option value={country}>{country}</option>
-            {/if}
-          {/each}
-        </select>
-      </label>
+      <Select bind:value={guesses[index]} isDisabled={guess !== index}>
+        <option value="" disabled selected hidden>Select One</option>
+        {#each countries as country}
+          {#if guesses.indexOf(country) === -1 || guesses.indexOf(country) === index}
+            <option value={country}>{country}</option>
+          {/if}
+        {/each}
+      </Select>
       {#if distance}
         <div>
           <p>{distance}km</p>
@@ -48,14 +68,26 @@
       {/if}
     </div>
   {/each}
-  <button type="button" class="bg-teal-600 p-2 text-white hover:bg-teal-200 hover:text-black" on:click={judgeGuess}>
-    Guess
-  </button>
-</form>
-{#if loading}
+</GameForm>
+{#if loading || isCorrect || gameOver}
   <div class="w-screen h-screen absolute inset-0 flex justify-center items-center">
-  <div class="w-screen h-screen bg-black opacity-30 absolute inset-0" />
-    <img src="/icons/spinner.svg" alt="a spinning icon" class="h-20 w-20 z-10 loadingSpinner">
+    <div class="w-screen h-screen bg-white opacity-40 absolute inset-0" />
+    {#if loading}
+      <img src="/icons/spinner.svg" alt="a spinning icon" class="h-20 w-20 z-10 loadingSpinner">
+    {:else if isCorrect}
+      <div class="bg-white w-full min-h-20 py-5 mx-5 flex flex-col justify-center items-center z-10 max-w-4xl rounded-md">
+        <h2 class="text-2xl">Correct!</h2>
+        <p>{getDistanceText()}</p>
+      </div>
+    {:else if gameOver}
+      <div class="bg-white w-full min-h-20 mx-5 py-5 flex gap-3 flex-col justify-center items-center z-10 max-w-4xl rounded-md">
+        <h2 class="text-2xl">Sorry! You're out of guesses.</h2>
+        <div class="flex gap-2">
+          <button class="bg-teal-600 p-2 text-white hover:bg-teal-200 hover:text-black">Try Again</button>
+          <button class="bg-teal-600 p-2 text-white hover:bg-teal-200 hover:text-black">Reveal The Answer</button>
+        </div>
+      </div>
+    {/if}
   </div>
 {/if}
 
